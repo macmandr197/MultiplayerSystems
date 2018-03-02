@@ -113,36 +113,39 @@ void InputHandler()
 		}
 		else if (g_networkState == NS_Lobby)
 		{
-			if (!createdPlayers[g_rakPeerInterface->GetIndexFromSystemAddress(g_clientAddress)])
-			{
-				if (!hasJoined)
+			
+				if (!hasJoined) //if the user has already joined the lobby, don't display the welcome message more than once
 				{
 					std::cout << "If you would like to play this game, enter your name " << std::endl;
 					std::cout << "if you want to quit, type quit. " << std::endl;
 					hasJoined = true;
 				}
+
 				std::cin >> userInput;
 
-				if (strcmp(userInput, "quit") == 0)
+				if (!createdPlayers[g_rakPeerInterface->GetIndexFromSystemAddress(g_clientAddress)]) //if the user has already created a player, stop them from creating another
 				{
-					//heartbreaking
-					assert(0);
+					if (strcmp(userInput, "quit") == 0)
+					{
+						//heartbreaking
+						assert(0);
+					}
+					else
+					{
+						RakNet::BitStream bs;
+						bs.Write((RakNet::MessageID)ID_ADD_PLAYER);
+						RakNet::SystemAddress sysAddress(g_clientAddress);
+						bs.Write(sysAddress);
+						RakNet::RakString str(userInput);
+						bs.Write(str);
+						g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
+						//g_networkState = NS_InGame;
+					}
 				}
 				else
 				{
-					RakNet::BitStream bs;
-					bs.Write((RakNet::MessageID)ID_ADD_PLAYER);
-					RakNet::SystemAddress sysAddress(g_clientAddress);
-					bs.Write(sysAddress);
-					RakNet::RakString str(userInput);
-					bs.Write(str);
-					g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
-					//g_networkState = NS_InGame;
+					std::cout << "You have already created a player!" << std::endl;
 				}
-			}
-			else
-			{
-			}
 		}
 		else if (g_networkState == NS_InGame)
 		{
@@ -294,7 +297,11 @@ void PacketHandler()
 							printf("Player with the name that already exists, please enter new name.\n ");
 						break;
 					case ID_PLAYER_CREATED_SUCCESSFULLY:
-						printf("Created player Successfully!\n");
+						{
+							printf("Created player Successfully!\n");
+							createdPlayers[g_rakPeerInterface->GetIndexFromSystemAddress(g_clientAddress)] = true;		
+							std::cout << "Waiting on other players..." << std::endl;
+						}
 						break;
 					default:
 						// It's a client, so just show the message
