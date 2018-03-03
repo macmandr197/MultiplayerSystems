@@ -28,6 +28,8 @@ enum {
 	ID_PLAYER_CREATED_SUCCESSFULLY,
 	ID_STARTING_GAME,
 	ID_INCREMENT_READY_PLAYERS,
+	ID_CHECK_PLAYER_NAME,
+	ID_PLAYER_NAME_AVAILABLE,
 
  };
 
@@ -48,6 +50,7 @@ std::vector<Player> players;
 
 //Joining Variables
 bool hasJoined = false;
+bool nameAvailable = false;
 bool createdPlayers[MAX_CONNECTIONS];
 int readyPlayers = 0;
 
@@ -100,6 +103,20 @@ bool CheckForAllPlayers()
 	return false;
 }
 
+Player::AttackType ConverToAttackType(const std::string& str)
+{
+	if (str == "warrior") return Player::Warrior;
+	if (str == "mage") return Player::Mage;
+	if (str == "ranger") return Player::Ranger;
+}
+
+std::string ConvertAttackTypeToString(const Player::AttackType& type)
+{
+	if (type == Player::Warrior) return "warrior";
+	if (type == Player::Mage) return "mage";
+	if (type == Player::Ranger) return "ranger";
+}
+
 void InputHandler()
 {
 	while (isRunning)
@@ -133,34 +150,68 @@ void InputHandler()
 					hasJoined = true;
 				}
 
-				std::cin >> userInput;			
+				while (true)
+				{
+					//if (createdPlayers[g_rakPeerInterface->GetIndexFromSystemAddress(g_clientAddress)])
+					if (nameAvailable)
+					{
+						break;
+					}
+					if (strcmp(userInput, "/quit") == 0)
+					{
+						//heartbreaking
+						assert(0);
+					}
+					std::cin >> userInput;
 
-			if (!createdPlayers[g_rakPeerInterface->GetIndexFromSystemAddress(g_clientAddress)]) //if the user has already created a player, stop them from creating another
-			{
-				if (strcmp(userInput, "/quit") == 0)
-				{
-					//heartbreaking
-					assert(0);
+					if (!nameAvailable)
+					{
+						RakNet::BitStream bs;
+						bs.Write((RakNet::MessageID)ID_CHECK_PLAYER_NAME);
+						RakNet::SystemAddress sysAddress(g_clientAddress);
+						bs.Write(sysAddress);
+						RakNet::RakString str(userInput);
+						bs.Write(str);
+						g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);					
+						
+					}
+
 				}
-				else
-				{
-				
+
 					RakNet::BitStream bs;
 					bs.Write((RakNet::MessageID)ID_ADD_PLAYER);
 					RakNet::SystemAddress sysAddress(g_clientAddress);
 					bs.Write(sysAddress);
 					RakNet::RakString str(userInput);
 					bs.Write(str);
+					std::cout << "Now enter your attack type: Either warrior, mage, or ranger." << std::endl;
+					char playerType[256];
+					while (true)
+					{
+						std::cin >> playerType;
+						if (strcmp(playerType, "warrior") == 0 || strcmp(playerType, "mage") == 0 || strcmp(playerType, "ranger") == 0)
+						{
+							break;
+						}
+
+						std::cout << "That isn't a correct type. Please enter a correct type. (warrior, mage, ranger)" << std::endl;
+						std::cout << "You entered: " << playerType << std::endl;
+					}
+					Player::AttackType plyrType(ConverToAttackType(playerType));
+					bs.Write(plyrType);
 					g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
-				}				
+				
+			
+				
+
+			//if (!createdPlayers[g_rakPeerInterface->GetIndexFromSystemAddress(g_clientAddress)]) //if the user has already created a player, stop them from creating another
+			//{
+								
 					//g_networkState = NS_InGame;
-			}
-			else
-			{
+			//}
 				g_networkState = NS_InGame;
 				hasJoined = false;
 				//std::cout << "You have already created a player!" << std::endl;
-			}
 				
 				
 		}
@@ -294,26 +345,13 @@ void PacketHandler()
 							myBitStream.Read(sysAddress);
 							RakNet::RakString str;
 							myBitStream.Read(str);
-							auto temp = new Player(std::string(str));
+							Player::AttackType playerType;
+							myBitStream.Read(playerType);
+							auto temp = new Player(std::string(str), playerType);
 							temp->SetAddress(sysAddress);
-							//searching the vector to see if a player with the same name already exists
-							auto it = std::find_if(players.begin(), players.end(), [&temp](const Player& obj) {return obj.GetName() == temp->GetName(); });
-
-							if (it != players.end()) //if a player is trying to create a new character, but is using an existing name
-							{							
-								RakNet::BitStream bs; //send a message to the player saying that the player already exists
-								bs.Write((RakNet::MessageID)ID_PLAYER_ALREADY_EXISTS);
-								g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, sysAddress, false);								
-							}
-							else //let the player know they created the player successfully, and add the player to the colection
-							{								
-								RakNet::BitStream bs;
-								bs.Write((RakNet::MessageID)ID_PLAYER_CREATED_SUCCESSFULLY);
-								g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, sysAddress, false);
-								players.push_back(*temp);
-								readyPlayers++;
-								std::cout << "Added player: " << temp->GetName() << ". Player's length is: " << players.size() << std::endl;
-							}							
+							players.push_back(*temp);
+							readyPlayers++;
+							std::cout << "Added player: " << temp->GetName() << ". Type is: " << ConvertAttackTypeToString(temp->GetType()) << ". Player's length is: " << players.size() << std::endl;						
 						break;
 						}
 					case ID_PLAYER_ALREADY_EXISTS:
@@ -335,6 +373,40 @@ void PacketHandler()
 					case ID_INCREMENT_READY_PLAYERS:
 						readyPlayers++;
 						break;
+					case ID_CHECK_PLAYER_NAME:
+						{
+						RakNet::BitStream myBitStream(packet->data, packet->length, false);
+						RakNet::MessageID messageID;
+						myBitStream.Read(messageID);
+						RakNet::SystemAddress sysAddress;
+						myBitStream.Read(sysAddress);
+						RakNet::RakString str;
+						myBitStream.Read(str);
+
+						auto it = std::find_if(players.begin(), players.end(), [&str](const Player& obj) {return obj.GetName() == std::string(str); });
+
+						if (it != players.end()) //if a player is trying to create a new character, but is using an existing name
+						{
+							RakNet::BitStream bs; //send a message to the player saying that the player already exists
+							bs.Write((RakNet::MessageID)ID_PLAYER_ALREADY_EXISTS);
+							g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, sysAddress, false);
+						}
+						else
+						{
+							RakNet::BitStream bs; //send a message to the player saying that the player name is available
+							bs.Write((RakNet::MessageID)ID_PLAYER_NAME_AVAILABLE);
+							bs.Write(bool(true));
+							g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, sysAddress, false);
+							std::cout << "player checking name" << std::endl;
+						}
+						break;
+						}
+					case ID_PLAYER_NAME_AVAILABLE:
+						{
+						std::cout << "Player Name Available! " << std::endl;
+						nameAvailable = true;
+						break;
+						}
 					default:
 						// It's a client, so just show the message
 						printf("%s\n", packet->data);
@@ -388,7 +460,7 @@ int main()
 
 				//client connection
 				//127.0.0.1 is localhost aka yourself
-				RakNet::ConnectionAttemptResult car = g_rakPeerInterface->Connect("192.168.0.19", SERVER_PORT,nullptr,0);
+				RakNet::ConnectionAttemptResult car = g_rakPeerInterface->Connect("192.168.236.1", SERVER_PORT,nullptr,0);
 				RakAssert(car == RakNet::CONNECTION_ATTEMPT_STARTED);
 				std::cout << "client attempted connection..waiting for response" << std::endl;
 				g_networkState = NS_PendingConnection;

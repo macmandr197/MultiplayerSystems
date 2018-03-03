@@ -4,11 +4,13 @@
 Player::Player()
 {
 	name = "notset";
+	currentType = Warrior;
 }
 
-Player::Player(std::string playerName)
+Player::Player(std::string playerName, AttackType type)
 {
 	name = playerName;
+	currentType = type;
 }
 void Player::AttackPlayer(Player other) const
 {
@@ -38,5 +40,16 @@ RakNet::SystemAddress Player::GetAddress() const
 {
 	return address;
 }
+
+Player::AttackType Player::GetType() const
+{
+	return currentType;
+}
+
+void Player::SetType(AttackType type)
+{
+	currentType = type;
+}
+
 
 
