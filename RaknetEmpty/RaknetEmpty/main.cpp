@@ -32,7 +32,6 @@ enum
 	ID_BEGIN_GAME,
 	ID_GET_STATS,
 	ID_PRINT_MESSAGE
-
 };
 
 struct SPlayer
@@ -129,17 +128,6 @@ void InputHandler()
 			isServer = userInput.at(0) == 's';
 			g_networkState = NS_CreateSocket;
 		}
-		else if (g_networkState == NS_CreateSocket)
-		{
-			/*if (isServer)
-			{
-				std::cout << "Server creating socket..." << std::endl;
-			}
-			else
-			{
-				std::cout << "Client creating socket..." << std::endl;
-			}*/
-		}
 		else if (g_networkState == NS_Lobby)
 		{
 			if (!hasJoined) //if the user has already joined the lobby, don't display the welcome message more than once
@@ -151,7 +139,6 @@ void InputHandler()
 
 			while (true)
 			{
-				//if (createdPlayers[g_rakPeerInterface->GetIndexFromSystemAddress(g_clientAddress)])
 				std::cin >> userInput;
 				if (!nameAvailable)
 				{
@@ -208,7 +195,7 @@ void InputHandler()
 				std::cout << "Welcome to the game. Until everyone is ready, you're welcome to wait here.\n When ready. type '/ready'\n\nType /help for available actions." << std::endl;
 				hasJoined = true;
 			}
-			std::getline(std::cin,input);
+			getline(std::cin, input);
 			//std::cin >> input;
 			if (input.compare("/ready") == 0)
 			{
@@ -237,16 +224,13 @@ void InputHandler()
 				{
 					std::cout << "heal" << std::endl;
 				}
-				else if (input.substr(0,7).compare("/attack") == 0) //checking the first part of the string to see if the player does want to attack
+				else if (input.substr(0, 7).compare("/attack") == 0) //checking the first part of the string to see if the player does want to attack
 				{
-					std::string mapo = input.substr(input.find_first_of(' ')+1, input.length());
+					std::string mapo = input.substr(input.find_first_of(' ') + 1, input.length());
 					std::cout << "Attack: " << mapo << std::endl;
 				}
 			}
-
-
 		}
-
 		std::this_thread::sleep_for(std::chrono::microseconds(100));
 	}
 }
@@ -261,8 +245,7 @@ unsigned char GetPacketIdentifier(RakNet::Packet* packet)
 		RakAssert(packet->length > sizeof(RakNet::MessageID) + sizeof(RakNet::Time));
 		return (unsigned char)packet->data[sizeof(RakNet::MessageID) + sizeof(RakNet::Time)];
 	}
-	else
-		return (unsigned char)packet->data[0];
+	return (unsigned char)packet->data[0];
 }
 
 bool HandleLowLevelPacket(RakNet::Packet* packet)
@@ -339,7 +322,6 @@ void PacketHandler()
 		for (RakNet::Packet* packet = g_rakPeerInterface->Receive(); packet != nullptr; g_rakPeerInterface->DeallocatePacket(packet) , packet = g_rakPeerInterface->Receive())
 		{
 			// We got a packet, get the identifier with our handy function
-
 			if (!HandleLowLevelPacket(packet))
 			{
 				unsigned char packetIdentifier = GetPacketIdentifier(packet);
@@ -392,7 +374,7 @@ void PacketHandler()
 							RakNet::RakString str;
 							myBitStream.Read(str);
 
-							auto it = std::find_if(players.begin(), players.end(), [&str](const Player& obj) { return obj.GetName() == std::string(str); });
+							auto it = find_if(players.begin(), players.end(), [&str](const Player& obj) { return obj.GetName() == std::string(str); });
 
 							if (it != players.end()) //if a player is trying to create a new character, but is using an existing name
 							{
@@ -418,11 +400,8 @@ void PacketHandler()
 							{
 								RakNet::BitStream bs;
 								bs.Write(RakNet::MessageID(ID_BEGIN_GAME));
-								std::string name = "The game has begun! it is " + players[0].GetName() + "'s turn!\n";	
+								std::string name = "The game has begun! it is " + players[0].GetName() + "'s turn!\n";
 								RakNet::RakString str(name.data());
-								/*char stupidChar[256];
-								strncpy_s(stupidChar, name.c_str(), sizeof(stupidChar)); //this is fucking stupid. Why
-								RakNet::RakString str(RakNet::RakString().NonVariadic(stupidChar));*/
 								bs.Write(str);
 								for each (Player player in players)
 								{
@@ -459,18 +438,14 @@ void PacketHandler()
 							bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
 							RakNet::RakString str;
 							str += ("----CURRENT PLAYER STATS----\n");
-							//bs.Write(str);
 							for each (Player player in players)
-							//("Player: " + player.GetName() + " | Type: " + player.GetType() + " | Attack Power: " + player.GetAttackPower() + " | Current Health: " + player.GetHealth());
 							{
 								RakNet::RakString thestring(player.GetPlayerStatsAsRakString());
 								str += thestring;
 							}
-							str +=("----------------------------");
-							//printf("%s\n", static_cast<const char*>(str));
+							str += ("----------------------------");
 							bs.Write(str);
 							g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, address, false);
-
 						}
 						break;
 					case ID_PRINT_MESSAGE:
@@ -480,7 +455,6 @@ void PacketHandler()
 							myBitStream.Read(messageID);
 							RakNet::RakString str;
 							myBitStream.Read(str);
-							//printf("%s\n", str.c_str());
 							std::cout << str << std::endl;
 						}
 						break;
