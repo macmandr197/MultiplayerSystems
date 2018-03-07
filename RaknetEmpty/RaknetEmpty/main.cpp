@@ -162,19 +162,14 @@ void InputHandler()
 			while (true)
 			{
 				//if (createdPlayers[g_rakPeerInterface->GetIndexFromSystemAddress(g_clientAddress)])
-				if (nameAvailable)
-				{
-					break;
-				}
-				if (strcmp(userInput, "/quit") == 0)
-				{
-					//heartbreaking
-					assert(0);
-				}
 				std::cin >> userInput;
-
 				if (!nameAvailable)
 				{
+					if (strcmp(userInput, "/quit") == 0)
+					{
+						//heartbreaking
+						assert(0);
+					}
 					RakNet::BitStream bs;
 					bs.Write((RakNet::MessageID)ID_CHECK_PLAYER_NAME);
 					RakNet::SystemAddress sysAddress(g_clientAddress);
@@ -182,6 +177,11 @@ void InputHandler()
 					RakNet::RakString str(userInput);
 					bs.Write(str);
 					g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
+				}
+				std::this_thread::sleep_for(std::chrono::microseconds(125000)); //making the thread sleep a little so that the client can catch up to the server
+				if (nameAvailable)
+				{
+					break;
 				}
 			}
 
