@@ -1,5 +1,6 @@
 #include "Player.h"
 
+
 Player::Player()
 {
 	name = "notset";
@@ -44,6 +45,11 @@ void Player::AttackPlayer(Player other) const
 	}
 }
 
+void Player::RemoveHealth(int dmg)
+{
+	health -= dmg;
+}
+
 std::string Player::GetName() const
 {
 	return name;
@@ -82,6 +88,11 @@ int Player::GetAttackPower() const
 int Player::GetHealth() const
 {
 	return health;
+}
+
+void Player::Heal()
+{
+	health += healAmount;
 }
 
 std::string Player::GetPlayerStats() const

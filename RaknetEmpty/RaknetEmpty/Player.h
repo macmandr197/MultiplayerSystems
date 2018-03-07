@@ -16,6 +16,8 @@ public:
 
 	Player(std::string playerName, AttackType type);
 
+	int healAmount = 2;
+
 private:
 	std::string name;
 	RakNet::SystemAddress address;
@@ -24,6 +26,8 @@ private:
 
 public:
 	void AttackPlayer(Player other) const;
+
+	void RemoveHealth(int dmg);
 
 	std::string GetName() const;
 
@@ -40,6 +44,8 @@ public:
 	int GetAttackPower() const;
 
 	int GetHealth() const;
+
+	void Heal();
 
 	std::string GetPlayerStats() const;
 

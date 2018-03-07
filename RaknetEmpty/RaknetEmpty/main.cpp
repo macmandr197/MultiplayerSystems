@@ -31,7 +31,10 @@ enum
 	ID_PLAYER_READY,
 	ID_BEGIN_GAME,
 	ID_GET_STATS,
-	ID_PRINT_MESSAGE
+	ID_PRINT_MESSAGE,
+	ID_HEAL_PLAYER,
+	ID_ATTACK_PLAYER,
+	ID_GET_PLAYER_ID,
 };
 
 struct SPlayer
@@ -57,6 +60,8 @@ int readyPlayers = 0;
 
 //game variables
 bool isPlaying = false;
+bool nameFound = false;
+int playerID = -1;
 
 enum NetworkStates
 {
@@ -81,6 +86,11 @@ void OnIncomingConnection(RakNet::Packet* packet)
 	g_totalPlayers++;
 	unsigned short numConnections = g_rakPeerInterface->NumberOfConnections();
 	std::cout << "Total player(s): " << g_totalPlayers << "\nNum connection(s): " << numConnections << std::endl;
+	RakNet::BitStream bs;
+	bs.Write(RakNet::MessageID(ID_GET_PLAYER_ID));
+	int ID(g_totalPlayers-1);
+	bs.Write(ID);
+	g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 }
 
 void OnConnectionAccepted(RakNet::Packet* packet)
@@ -90,7 +100,7 @@ void OnConnectionAccepted(RakNet::Packet* packet)
 		//server should never request connections, only clients do
 		assert(0);
 	}
-	//we have successfully connected, go to lobby
+	//we have successfully connected, go to lobby	
 	g_networkState = NS_Lobby;
 	g_serverAddress = packet->systemAddress;
 	g_clientAddress = g_rakPeerInterface->GetExternalID(packet->systemAddress);
@@ -205,7 +215,7 @@ void InputHandler()
 			}
 			else if (input.compare("/help") == 0)
 			{
-				printf("You have the following actions available to you:\n'/quit' - quits the game\n'/heal' - heal yourself\n'/attack [player name]' - attack the specified player\n'/stats' view players stats\n");
+				printf("You have the following actions available to you:\n'/quit' - quits the game\n'/stats' view players stats\n");
 			}
 			if (isPlaying)
 			{
@@ -222,12 +232,22 @@ void InputHandler()
 				}
 				else if (input.compare("/heal") == 0)
 				{
-					std::cout << "heal" << std::endl;
+					RakNet::BitStream bs;
+					bs.Write(RakNet::MessageID(ID_HEAL_PLAYER));
+					g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
 				}
 				else if (input.substr(0, 7).compare("/attack") == 0) //checking the first part of the string to see if the player does want to attack
 				{
-					std::string mapo = input.substr(input.find_first_of(' ') + 1, input.length());
-					std::cout << "Attack: " << mapo << std::endl;
+					std::string playerToAttack = input.substr(input.find_first_of(' ') + 1, input.length());
+					
+					std::cout << "Attack: " << playerToAttack << std::endl;
+					RakNet::BitStream bs;
+					bs.Write(RakNet::MessageID(ID_ATTACK_PLAYER));
+					int player(playerID);
+					bs.Write(player);
+					RakNet::RakString otherPlayer(playerToAttack.data());
+					bs.Write(otherPlayer);
+					g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
 				}
 			}
 		}
@@ -352,6 +372,7 @@ void PacketHandler()
 							temp->SetAddress(sysAddress);
 							players.push_back(*temp);
 							std::cout << "Added player: " << temp->GetName() << ". Type is: " << ConvertAttackTypeToString(temp->GetType()) << ". Player's length is: " << players.size() << std::endl;
+							RakNet::BitStream bs;							
 							break;
 						}
 					case ID_PLAYER_ALREADY_EXISTS:
@@ -408,6 +429,19 @@ void PacketHandler()
 									g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, player.GetAddress(), false);
 								}
 							}
+							else
+							{
+								RakNet::BitStream bs;
+								bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
+								int numCon = g_rakPeerInterface->NumberOfConnections();
+								std::string name = std::to_string(readyPlayers) + "/" + std::to_string(numCon) + " players ready.";
+								RakNet::RakString str(name.data());
+								bs.Write(str);
+								for each (Player player in players)
+								{
+									g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, player.GetAddress(), false);
+								}
+							}
 						}
 						break;
 					case ID_PLAYER_NAME_AVAILABLE:
@@ -456,6 +490,69 @@ void PacketHandler()
 							RakNet::RakString str;
 							myBitStream.Read(str);
 							std::cout << str << std::endl;
+						}
+						break;
+					case ID_HEAL_PLAYER:
+						{
+							RakNet::SystemAddress addr(packet->systemAddress);
+							auto it = find_if(players.begin(), players.end(), [&addr](const Player& obj) { return obj.GetAddress() == addr; });
+
+							if (it != players.end()) //if the player was found, heal them
+							{
+								std::cout << "Player found. Name is: " << it->GetName() << std::endl;
+								it->Heal();		
+							
+								RakNet::BitStream bs;
+								bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
+								RakNet::RakString str;
+								str += "Healed for ";
+								str += std::to_string(it->healAmount).data();
+								str += ". ";
+								str += "Current health is: ";
+								str += std::to_string(it->GetHealth()).data();
+								bs.Write(str);
+								g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+							}						
+						}
+						break;
+					case ID_ATTACK_PLAYER:
+						{
+							RakNet::BitStream myBitStream(packet->data, packet->length, false);
+							RakNet::MessageID messageID;
+							myBitStream.Read(messageID);
+							int attackingPlayer;
+							myBitStream.Read(attackingPlayer);
+							RakNet::RakString playerBeingAttacked;
+							myBitStream.Read(playerBeingAttacked);							
+							auto it = find_if(players.begin(), players.end(), [&playerBeingAttacked](const Player& obj) { return obj.GetName() == std::string(playerBeingAttacked); });
+
+							if (it != players.end()) //if the player was found, heal them
+							{
+								it->RemoveHealth(players[attackingPlayer].GetAttackPower());
+								RakNet::BitStream bs;
+								bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
+								bs.Write(RakNet::RakString("%s was attacked by %s. Their health is now: %i", it->GetName().data(), players[attackingPlayer].GetName().data(), it->GetHealth()));
+								g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+							}
+							else
+							{
+								RakNet::BitStream bs;
+								bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
+								RakNet::RakString str("Player not found.Please try again");
+								bs.Write(str);
+								g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+							}
+						}
+						break;
+					case ID_GET_PLAYER_ID:
+						{
+							RakNet::BitStream myBitStream(packet->data, packet->length, false);
+							RakNet::MessageID m_ID;
+							myBitStream.Read(m_ID);
+							int ID;
+							myBitStream.Read(ID);
+							playerID = ID;
+							//printf("My ID is: %i\n", playerID);
 						}
 						break;
 					default:
