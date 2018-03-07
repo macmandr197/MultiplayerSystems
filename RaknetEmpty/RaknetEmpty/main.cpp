@@ -97,23 +97,13 @@ void OnConnectionAccepted(RakNet::Packet* packet)
 	g_clientAddress = g_rakPeerInterface->GetExternalID(packet->systemAddress);
 }
 
-bool CheckForAllPlayers()
-{
-	std::cout << "Ready players: " << readyPlayers << std::endl;
-	if (readyPlayers == g_rakPeerInterface->NumberOfConnections())
-	{
-		return true;
-	}
-	return false;
-}
-
 Player::AttackType ConverToAttackType(const std::string& str)
 {
-	if (str == "warrior")
+	if (str.compare("warrior") == 0)
 		return Player::Warrior;
-	if (str == "mage")
+	if (str.compare("mage") == 0)
 		return Player::Mage;
-	if (str == "ranger")
+	if (str.compare("ranger") == 0)
 		return Player::Ranger;
 }
 
@@ -131,12 +121,12 @@ void InputHandler()
 {
 	while (isRunning)
 	{
-		char userInput[255];
+		std::string userInput;
 		if (g_networkState == NS_Decision)
 		{
 			std::cout << "Press (s) for server, (c) for client" << std::endl;
 			std::cin >> userInput;
-			isServer = userInput[0] == 's';
+			isServer = userInput.at(0) == 's';
 			g_networkState = NS_CreateSocket;
 		}
 		else if (g_networkState == NS_CreateSocket)
@@ -165,7 +155,7 @@ void InputHandler()
 				std::cin >> userInput;
 				if (!nameAvailable)
 				{
-					if (strcmp(userInput, "/quit") == 0)
+					if (userInput.compare("/quit") == 0)
 					{
 						//heartbreaking
 						assert(0);
@@ -174,7 +164,7 @@ void InputHandler()
 					bs.Write((RakNet::MessageID)ID_CHECK_PLAYER_NAME);
 					RakNet::SystemAddress sysAddress(g_clientAddress);
 					bs.Write(sysAddress);
-					RakNet::RakString str(userInput);
+					RakNet::RakString str(userInput.data());
 					bs.Write(str);
 					g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
 				}
@@ -189,60 +179,68 @@ void InputHandler()
 			bs.Write((RakNet::MessageID)ID_ADD_PLAYER);
 			RakNet::SystemAddress sysAddress(g_clientAddress);
 			bs.Write(sysAddress);
-			RakNet::RakString str(userInput);
+			RakNet::RakString str(userInput.data());
 			bs.Write(str);
 			std::cout << "Now enter your attack type: Either warrior, mage, or ranger." << std::endl;
-			char playerType[256];
+			//char playerType[256];
+			std::string playerType;
 			while (true)
 			{
 				std::cin >> playerType;
-				if (strcmp(playerType, "warrior") == 0 || strcmp(playerType, "mage") == 0 || strcmp(playerType, "ranger") == 0)
+				if (playerType.compare("warrior") == 0 || playerType.compare("mage") == 0 || playerType.compare("ranger") == 0)
 				{
 					break;
 				}
-
 				std::cout << "That isn't a correct type. Please enter a correct type. (warrior, mage, ranger)" << std::endl;
 				std::cout << "You entered: " << playerType << std::endl;
 			}
 			Player::AttackType plyrType(ConverToAttackType(playerType));
 			bs.Write(plyrType);
 			g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
-
-			//if (!createdPlayers[g_rakPeerInterface->GetIndexFromSystemAddress(g_clientAddress)]) //if the user has already created a player, stop them from creating another
-			//{
-
-			//g_networkState = NS_InGame;
-			//}
 			g_networkState = NS_InGame;
 			hasJoined = false;
-			//std::cout << "You have already created a player!" << std::endl;
 		}
 		else if (g_networkState == NS_InGame)
 		{
+			std::string input;
 			if (!hasJoined)
 			{
-				std::cout << "Welcome to the game. Until everyone is ready, you're welcome to wait here.\n When ready. type '/ready'\nType /help for available actions." << std::endl;
+				std::cout << "Welcome to the game. Until everyone is ready, you're welcome to wait here.\n When ready. type '/ready'\n\nType /help for available actions." << std::endl;
 				hasJoined = true;
 			}
-			std::cin >> userInput;
-			if (strcmp(userInput, "/ready") == 0)
+			std::getline(std::cin,input);
+			//std::cin >> input;
+			if (input.compare("/ready") == 0)
 			{
 				RakNet::BitStream bs;
 				bs.Write(RakNet::MessageID(ID_PLAYER_READY));
 				g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
 			}
+			else if (input.compare("/help") == 0)
+			{
+				printf("You have the following actions available to you:\n'/quit' - quits the game\n'/heal' - heal yourself\n'/attack [player name]' - attack the specified player\n'/stats' view players stats\n");
+			}
 			if (isPlaying)
 			{
-				if (strcmp(userInput, "/help") == 0)
+				if (input.compare("/help") == 0)
 				{
-					printf("You have the following actions available to you:\n'/quit' - quits the game\n'/heal' - heal yourself\n'/attack [player name]' - attack the specified player\n'/stats' view players stats");
+					printf("You have the following actions available to you:\n'/quit' - quits the game\n'/heal' - heal yourself\n'/attack [player name]' - attack the specified player\n'/stats' view players stats\n");
 				}
-				else if (strcmp(userInput, "/stats") == 0)
+				else if (input.compare("/stats") == 0)
 				{
 					RakNet::BitStream bs;
 					bs.Write(RakNet::MessageID(ID_GET_STATS));
 					bs.Write(RakNet::SystemAddress(g_clientAddress));
 					g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
+				}
+				else if (input.compare("/heal") == 0)
+				{
+					std::cout << "heal" << std::endl;
+				}
+				else if (input.substr(0,7).compare("/attack") == 0) //checking the first part of the string to see if the player does want to attack
+				{
+					std::string mapo = input.substr(input.find_first_of(' ')+1, input.length());
+					std::cout << "Attack: " << mapo << std::endl;
 				}
 			}
 
@@ -352,7 +350,7 @@ void PacketHandler()
 							RakNet::BitStream myBitStream(packet->data, packet->length, false); // The false is for efficiency so we don't make a copy of the passed data
 							RakNet::MessageID messageID;
 							myBitStream.Read(messageID);
-							RakNet::RakString userName;
+							std::string userName;
 							myBitStream.Read(userName);
 							std::cout << userName << " is ready to play!!! " << std::endl;
 						}
@@ -420,10 +418,11 @@ void PacketHandler()
 							{
 								RakNet::BitStream bs;
 								bs.Write(RakNet::MessageID(ID_BEGIN_GAME));
-								std::string name = "The game has begun! it is " + players[0].GetName() + "'s turn!\n";
-								char stupidChar[256];
+								std::string name = "The game has begun! it is " + players[0].GetName() + "'s turn!\n";	
+								RakNet::RakString str(name.data());
+								/*char stupidChar[256];
 								strncpy_s(stupidChar, name.c_str(), sizeof(stupidChar)); //this is fucking stupid. Why
-								RakNet::RakString str(RakNet::RakString().NonVariadic(stupidChar));
+								RakNet::RakString str(RakNet::RakString().NonVariadic(stupidChar));*/
 								bs.Write(str);
 								for each (Player player in players)
 								{
