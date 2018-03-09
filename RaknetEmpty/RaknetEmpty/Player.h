@@ -53,7 +53,18 @@ public:
 
 	RakNet::RakString GetPlayerStatsAsRakString() const;
 
-	bool Player::operator==(const Player& p);
+	/*bool Player::operator==(const Player& p);*/
+	
+	bool  operator==(const Player & p) const
+	{
+	return ((p.GetName().data() == this->name) &&
+	(p.GetAddress() == this->address) &&
+	(p.GetAttackPower() == this->attackPower) &&
+	(p.GetHealth() == this->health) &&
+	(p.GetType() == this->currentType) &&
+	(p.healAmount == this->healAmount) &&
+	(p.id == this->id));
+	}
 
 	Player GetPlayer();
 };

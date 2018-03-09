@@ -98,7 +98,7 @@ void Player::Heal()
 
 std::string Player::GetPlayerStats() const
 {
-	return ("Player: " + name + " | Type: " + ToString(currentType) + " | Attack Power: " + std::to_string(attackPower) + " | Current Health: " + std::to_string(health));
+	return ("Player: " + name + " | Type: " + ToString(currentType) + " | Attack Power: " + std::to_string(attackPower) + " | Current Health: " + std::to_string(health) + " | ID: " + std::to_string(id));
 }
 
 RakNet::RakString Player::GetPlayerStatsAsRakString() const //why the fuck do i need to do this
@@ -112,13 +112,15 @@ RakNet::RakString Player::GetPlayerStatsAsRakString() const //why the fuck do i 
 	ret += RakNet::RakString(std::to_string(attackPower).data());
 	ret += " | Current Health: ";
 	ret += RakNet::RakString(std::to_string(health).data());
+	ret += " | ID: ";
+	ret += RakNet::RakString(std::to_string(id).data());
 	ret += "\n";
 	return ret;
 }
 
 Player Player::GetPlayer() { return *this; }
 
-bool  Player::operator==(const Player & p)
+/*bool  Player::operator==(const Player & p)
 {
 	return (p.GetName() == this->name) &&
 		   (p.GetAddress() == this->address) &&
@@ -127,4 +129,4 @@ bool  Player::operator==(const Player & p)
 		   (p.GetType() == this->currentType) &&
 		   (p.healAmount == this->healAmount) &&
 		   (p.id == this->id);
-}
+}*/

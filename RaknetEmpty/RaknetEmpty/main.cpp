@@ -41,6 +41,7 @@ enum
 	ID_HEAL_PLAYER,
 	ID_ATTACK_PLAYER,
 	ID_GET_PLAYER_ID,
+	ID_QUIT,
 };
 
 RakNet::SystemAddress g_serverAddress;
@@ -215,7 +216,11 @@ void InputHandler()
 			}
 			else if (input.compare("/help") == 0)
 			{
-				printf("You have the following actions available to you:\n'/quit' - quits the game\n'/stats' view players stats\n");
+				printf("You have the following actions available to you:\n'/stats' view players stats\n");
+			}
+			else if (input.compare("/quit") == 0)
+			{
+				
 			}
 			if (isPlaying)
 			{
@@ -228,6 +233,12 @@ void InputHandler()
 					RakNet::BitStream bs;
 					bs.Write(RakNet::MessageID(ID_GET_STATS));
 					bs.Write(RakNet::SystemAddress(g_clientAddress));
+					g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
+				}
+				else if(input.compare("/quit") == 0)
+				{
+					RakNet::BitStream bs;
+					bs.Write(RakNet::MessageID(ID_QUIT));
 					g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, g_serverAddress, false);
 				}
 				else if (input.compare("/heal") == 0)
@@ -424,7 +435,7 @@ void PacketHandler()
 							std::cout << "packet recieved. Number of player: " << readyPlayers << " number of  connections: " << g_rakPeerInterface->NumberOfConnections() << std::endl;
 							if (readyPlayers == g_rakPeerInterface->NumberOfConnections())
 							{
-								currentPlayerTurnID++; //increment the currentplayerid from -1 to 0 to start the game
+								++currentPlayerTurnID; //increment the currentplayerid from -1 to 0 to start the game
 								RakNet::BitStream bs;
 								bs.Write(RakNet::MessageID(ID_BEGIN_GAME));
 								std::string name = "The game has begun! it is " + players[currentPlayerTurnID].GetName() + "'s turn!\n";
@@ -554,9 +565,11 @@ void PacketHandler()
 							RakNet::RakString playerBeingAttacked;
 							myBitStream.Read(playerBeingAttacked);	
 							
-							if (attackingPlayer == currentPlayerTurnID)
+							if (attackingPlayer == currentPlayerTurnID) //player didn't survive the attack
 							{
-								auto it = find_if(players.begin(), players.end(), [&playerBeingAttacked](const Player& obj) { return obj.GetName() == std::string(playerBeingAttacked); });
+								auto it = find_if(players.begin(), players.end(), [&playerBeingAttacked](const Player& obj){ return obj.GetName() == std::string(playerBeingAttacked); });
+
+								
 
 								if (it != players.end()) //if the player was found, attack
 								{
@@ -570,23 +583,36 @@ void PacketHandler()
 										g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 
 										it->isAlive = false;
-
 										g_rakPeerInterface->CloseConnection(it->GetAddress(), true, 0); //kick player from channel
-										/*int itr = 0;
+										auto itt = find_if(players.begin(), players.end(), [&playerBeingAttacked](const Player& obj) { return obj.GetName() == std::string(playerBeingAttacked); });
+										if(itt != players.end())
+										{
+											std::rotate(itt, itt + 1, players.end());
+											players.pop_back(); //move dead player to back of vector and pop them
+										}
+										else
+										{
+											assert(0);//the game is over. we should kill the game in the worst way possible
+										}
+										
+										int itr = -1;
 										for each (Player player in players) //reassign player id's
 										{
+											++itr;
 											RakNet::BitStream bs;
 											bs.Write(RakNet::MessageID(ID_GET_PLAYER_ID));
-											bs.Write(int(itr));
+											bs.Write(int(itr));//set client id
+											players[itr].id = itr; //set local id
 											g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, player.GetAddress(), false);
-										}*/
+										}
+
 										currentPlayerTurnID = (currentPlayerTurnID + 1) % g_rakPeerInterface->NumberOfConnections();
 										RakNet::BitStream messageBs;
 										messageBs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
 										messageBs.Write(RakNet::RakString("It is now %s's turn!", players[currentPlayerTurnID].GetName().data()));
 										g_rakPeerInterface->Send(&messageBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 									}
-									else
+									else //player survived the attack
 									{
 										RakNet::BitStream bs;
 										bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
@@ -600,7 +626,7 @@ void PacketHandler()
 									}
 									
 								}								
-								else
+								else //couldnt find player
 								{
 									RakNet::BitStream bs;
 									bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
@@ -609,7 +635,7 @@ void PacketHandler()
 									g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 								}
 							}
-							else
+							else //not your turn
 							{
 								RakNet::BitStream bs;
 								bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
@@ -628,6 +654,12 @@ void PacketHandler()
 							myBitStream.Read(ID);
 							playerID = ID;
 							//printf("My ID is: %i\n", playerID);
+						}
+						break;
+					case ID_QUIT:
+						{
+						RakNet::BitStream myBitStream(packet->data, packet->length, false);
+						g_rakPeerInterface->CloseConnection(packet->systemAddress, true, 0);
 						}
 						break;
 					default:
