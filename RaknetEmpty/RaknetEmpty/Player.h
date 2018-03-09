@@ -14,14 +14,16 @@ private:
 public:
 	Player();
 
-	Player(std::string playerName, AttackType type);
+	Player(std::string playerName, AttackType type,int ID);
 
 	int healAmount = 2;
+	int id = -1;
+	bool isAlive = true;
 
 private:
 	std::string name;
 	RakNet::SystemAddress address;
-	int health = 10;
+	int health = 1;
 	int attackPower = 1;
 
 public:
@@ -50,4 +52,8 @@ public:
 	std::string GetPlayerStats() const;
 
 	RakNet::RakString GetPlayerStatsAsRakString() const;
+
+	bool Player::operator==(const Player& p);
+
+	Player GetPlayer();
 };
