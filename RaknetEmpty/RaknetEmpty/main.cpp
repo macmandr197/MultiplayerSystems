@@ -19,12 +19,6 @@ bool isServer = false;
 bool isRunning = true;
 unsigned short g_totalPlayers = 0;
 
-/*
- * Basically, to control player turns, check with the server to make sure its the player's turn, if not tell them so
- * otherwise increment player's turn using playerTurn = (playerTurn + 1) % totalconnections (to change depending on how many players are currently connected)
- * sync with server 
- */
-
 enum
 {
 	ID_THEGAME_LOBBY = ID_USER_PACKET_ENUM,
@@ -179,7 +173,6 @@ void InputHandler()
 			RakNet::RakString str(userInput.data());
 			bs.Write(str);
 			std::cout << "Now enter your attack type: Either warrior, mage, or ranger." << std::endl;
-			//char playerType[256];
 			std::string playerType;
 			while (true)
 			{
@@ -207,7 +200,6 @@ void InputHandler()
 				hasJoined = true;
 			}
 			getline(std::cin, input);
-			//std::cin >> input;
 			if (input.compare("/ready") == 0)
 			{
 				RakNet::BitStream bs;
