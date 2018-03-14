@@ -23,7 +23,7 @@ public:
 private:
 	std::string name;
 	RakNet::SystemAddress address;
-	int health = 1;
+	int health = 10;
 	int attackPower = 1;
 
 public:
@@ -65,6 +65,4 @@ public:
 	(p.healAmount == this->healAmount) &&
 	(p.id == this->id));
 	}
-
-	Player GetPlayer();
 };

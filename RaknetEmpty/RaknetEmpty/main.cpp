@@ -583,16 +583,6 @@ void PacketHandler()
 										{
 											players.erase(it--);											
 										}
-										/*auto itt = find_if(players.begin(), players.end(), [&playerBeingAttacked](const Player& obj) { return obj.GetName() == std::string(playerBeingAttacked); });
-										if(itt != players.end())
-										{
-											std::rotate(itt, itt + 1, players.end());
-											players.pop_back(); //move dead player to back of vector and pop them
-										}
-										else
-										{
-											assert(0);//the game is over. we should kill the game in the worst way possible
-										}*/
 										
 										int itr = -1;
 										for each (Player player in players) //reassign player id's

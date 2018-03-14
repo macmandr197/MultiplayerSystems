@@ -117,16 +117,3 @@ RakNet::RakString Player::GetPlayerStatsAsRakString() const //why the fuck do i 
 	ret += "\n";
 	return ret;
 }
-
-Player Player::GetPlayer() { return *this; }
-
-/*bool  Player::operator==(const Player & p)
-{
-	return (p.GetName() == this->name) &&
-		   (p.GetAddress() == this->address) &&
-		   (p.GetAttackPower() == this->attackPower) &&
-		   (p.GetHealth() == this->health) &&
-		   (p.GetType() == this->currentType) &&
-		   (p.healAmount == this->healAmount) &&
-		   (p.id == this->id);
-}*/
