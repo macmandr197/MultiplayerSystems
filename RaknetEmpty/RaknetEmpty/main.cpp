@@ -552,31 +552,38 @@ void PacketHandler()
 							RakNet::BitStream myBitStream(packet->data, packet->length, false);
 							RakNet::MessageID messageID;
 							myBitStream.Read(messageID);
-							int attackingPlayer;
-							myBitStream.Read(attackingPlayer);
+							int attackingPlayerID;
+							myBitStream.Read(attackingPlayerID);
 							RakNet::RakString playerBeingAttacked;
-							myBitStream.Read(playerBeingAttacked);	
+							myBitStream.Read(playerBeingAttacked);
 							
-							if (attackingPlayer == currentPlayerTurnID) //player didn't survive the attack
+							if (attackingPlayerID == currentPlayerTurnID && players[attackingPlayerID].GetName().data() != std::string(playerBeingAttacked)) //player didn't survive the attack
 							{
-								auto it = find_if(players.begin(), players.end(), [&playerBeingAttacked](const Player& obj){ return obj.GetName() == std::string(playerBeingAttacked); });
 
-								
+								auto it = find_if(players.begin(), players.end(), [&playerBeingAttacked](const Player& obj){ return obj.GetName() == std::string(playerBeingAttacked); });								
 
 								if (it != players.end()) //if the player was found, attack
 								{
-									it->RemoveHealth(players[attackingPlayer].GetAttackPower());
+									it->RemoveHealth(players[attackingPlayerID].GetAttackPower());
 
 									if (it->GetHealth() <= 0) //player died, remove from game and notify other players
 									{
 										RakNet::BitStream bs;
 										bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
-										bs.Write(RakNet::RakString("%s has died! They were killed by %s", it->GetName().data(), players[attackingPlayer].GetName().data()));
+										bs.Write(RakNet::RakString("%s has died! They were killed by %s", it->GetName().data(), players[attackingPlayerID].GetName().data()));
 										g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 
 										it->isAlive = false;
 										g_rakPeerInterface->CloseConnection(it->GetAddress(), true, 0); //kick player from channel
-										auto itt = find_if(players.begin(), players.end(), [&playerBeingAttacked](const Player& obj) { return obj.GetName() == std::string(playerBeingAttacked); });
+										if (it == players.begin())
+										{
+											players.erase(players.begin());
+										}
+										else
+										{
+											players.erase(it--);											
+										}
+										/*auto itt = find_if(players.begin(), players.end(), [&playerBeingAttacked](const Player& obj) { return obj.GetName() == std::string(playerBeingAttacked); });
 										if(itt != players.end())
 										{
 											std::rotate(itt, itt + 1, players.end());
@@ -585,7 +592,7 @@ void PacketHandler()
 										else
 										{
 											assert(0);//the game is over. we should kill the game in the worst way possible
-										}
+										}*/
 										
 										int itr = -1;
 										for each (Player player in players) //reassign player id's
@@ -597,18 +604,29 @@ void PacketHandler()
 											players[itr].id = itr; //set local id
 											g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, player.GetAddress(), false);
 										}
-
-										currentPlayerTurnID = (currentPlayerTurnID + 1) % g_rakPeerInterface->NumberOfConnections();
-										RakNet::BitStream messageBs;
-										messageBs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
-										messageBs.Write(RakNet::RakString("It is now %s's turn!", players[currentPlayerTurnID].GetName().data()));
-										g_rakPeerInterface->Send(&messageBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+										if (players.size() > 1)
+										{
+											currentPlayerTurnID = (currentPlayerTurnID + 1) % g_rakPeerInterface->NumberOfConnections();
+											RakNet::BitStream messageBs;
+											messageBs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
+											messageBs.Write(RakNet::RakString("It is now %s's turn!", players[currentPlayerTurnID].GetName().data()));
+											g_rakPeerInterface->Send(&messageBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+											
+										}
+										else
+										{
+											RakNet::BitStream messageBs;
+											messageBs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
+											messageBs.Write(RakNet::RakString("You've won! Congratulations!"));
+											g_rakPeerInterface->Send(&messageBs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+											g_rakPeerInterface->CloseConnection(players[0].GetAddress(), true, 0); //kick player from channel
+										}
 									}
 									else //player survived the attack
 									{
 										RakNet::BitStream bs;
 										bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
-										bs.Write(RakNet::RakString("%s was attacked by %s. Their health is now: %i", it->GetName().data(), players[attackingPlayer].GetName().data(), it->GetHealth()));
+										bs.Write(RakNet::RakString("%s was attacked by %s. Their health is now: %i", it->GetName().data(), players[attackingPlayerID].GetName().data(), it->GetHealth()));
 										g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 										currentPlayerTurnID = (currentPlayerTurnID + 1) % g_rakPeerInterface->NumberOfConnections();
 										RakNet::BitStream messageBs;
@@ -626,6 +644,13 @@ void PacketHandler()
 									bs.Write(str);
 									g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 								}
+							}
+							else if (players[attackingPlayerID].GetName().data() == std::string(playerBeingAttacked) && attackingPlayerID == currentPlayerTurnID) //letting the player know they can't attack themselves
+							{
+								RakNet::BitStream bs;
+								bs.Write(RakNet::MessageID(ID_PRINT_MESSAGE));
+								bs.Write(RakNet::RakString("You can't attack yourself!"));
+								g_rakPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 							}
 							else //not your turn
 							{
