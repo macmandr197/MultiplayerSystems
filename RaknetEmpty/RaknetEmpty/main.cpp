@@ -718,7 +718,7 @@ int main()
 
 				//client connection
 				//127.0.0.1 is localhost aka yourself
-				RakNet::ConnectionAttemptResult car = g_rakPeerInterface->Connect("192.168.236.1", SERVER_PORT, nullptr, 0);
+				RakNet::ConnectionAttemptResult car = g_rakPeerInterface->Connect("127.0.0.1", SERVER_PORT, nullptr, 0);
 				RakAssert(car == RakNet::CONNECTION_ATTEMPT_STARTED);
 				std::cout << "client attempted connection..waiting for response" << std::endl;
 				g_networkState = NS_PendingConnection;
