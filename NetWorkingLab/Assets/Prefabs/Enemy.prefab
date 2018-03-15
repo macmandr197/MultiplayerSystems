@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 23720035198225982}
   - component: {fileID: 114204317079814432}
   - component: {fileID: 114380505997121178}
-  - component: {fileID: 114953311967684086}
+  - component: {fileID: 114690285644371876}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 223364493183002864}
   - component: {fileID: 114343088955144226}
   - component: {fileID: 114211465034579916}
-  - component: {fileID: 114475743677704186}
+  - component: {fileID: 114851566362719402}
   m_Layer: 5
   m_Name: Healthbar Canvas
   m_TagString: Untagged
@@ -211,7 +211,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 08b170f392ed14c4bb34bed4404c1430, type: 2}
+  - {fileID: 2100000, guid: 18f963e6377c1a24a82607fec9759163, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -324,22 +324,22 @@ MonoBehaviour:
   m_SceneId:
     m_Value: 0
   m_AssetId:
-    i0: 78
-    i1: 247
-    i2: 87
-    i3: 174
-    i4: 46
-    i5: 250
-    i6: 58
-    i7: 116
-    i8: 91
-    i9: 51
-    i10: 225
-    i11: 205
-    i12: 251
-    i13: 75
-    i14: 110
-    i15: 105
+    i0: 32
+    i1: 127
+    i2: 235
+    i3: 187
+    i4: 21
+    i5: 9
+    i6: 0
+    i7: 68
+    i8: 168
+    i9: 121
+    i10: 244
+    i11: 124
+    i12: 85
+    i13: 115
+    i14: 204
+    i15: 67
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 1
 --- !u!114 &114211465034579916
@@ -427,18 +427,7 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114475743677704186
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1694629292072068}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90cadf82e58565947806da285eebe861, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &114953311967684086
+--- !u!114 &114690285644371876
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -446,12 +435,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1328135831558144}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81bcc6579bdc5c14a896046164de0c52, type: 3}
+  m_Script: {fileID: 11500000, guid: 016344539e97c7c4fa0e1a6da9dab3e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   healthBar: {fileID: 224746297838465462}
   destroyOnDeath: 1
   currentHealth: 100
+--- !u!114 &114851566362719402
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1694629292072068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ae61545beeadcf4884e0855d0152ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114985159914148246
 MonoBehaviour:
   m_ObjectHideFlags: 1

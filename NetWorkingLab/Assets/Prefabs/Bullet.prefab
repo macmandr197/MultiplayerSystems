@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 54131408373747210}
   - component: {fileID: 114351169502245480}
   - component: {fileID: 114630964242346984}
-  - component: {fileID: 114882342240623900}
+  - component: {fileID: 114371038532648116}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Untagged
@@ -116,24 +116,35 @@ MonoBehaviour:
   m_SceneId:
     m_Value: 0
   m_AssetId:
-    i0: 71
-    i1: 119
-    i2: 154
-    i3: 86
-    i4: 50
-    i5: 148
-    i6: 75
-    i7: 20
-    i8: 122
-    i9: 2
-    i10: 145
-    i11: 253
-    i12: 211
-    i13: 251
-    i14: 56
-    i15: 188
+    i0: 151
+    i1: 43
+    i2: 214
+    i3: 36
+    i4: 160
+    i5: 33
+    i6: 125
+    i7: 68
+    i8: 89
+    i9: 123
+    i10: 52
+    i11: 34
+    i12: 149
+    i13: 105
+    i14: 53
+    i15: 183
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &114371038532648116
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1846196121811450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1963d617fe7e824294a0b260141c2f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114630964242346984
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -155,17 +166,6 @@ MonoBehaviour:
   m_SnapThreshold: 5
   m_InterpolateRotation: 1
   m_InterpolateMovement: 1
---- !u!114 &114882342240623900
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1846196121811450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68d6c809526d87e4b834bc6b0107eb50, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &135949272582445854
 SphereCollider:
   m_ObjectHideFlags: 1

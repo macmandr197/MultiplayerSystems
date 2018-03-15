@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 223898437882514488}
   - component: {fileID: 114491910509908674}
   - component: {fileID: 114050007814487854}
-  - component: {fileID: 114855792532194854}
+  - component: {fileID: 114856439647018552}
   m_Layer: 5
   m_Name: Healthbar Canvas
   m_TagString: Untagged
@@ -127,8 +127,8 @@ GameObject:
   - component: {fileID: 23657073569203848}
   - component: {fileID: 114137620858368176}
   - component: {fileID: 114216306817196914}
-  - component: {fileID: 114991222265803648}
-  - component: {fileID: 114478723341162686}
+  - component: {fileID: 114367940207851134}
+  - component: {fileID: 114540576293534454}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -206,7 +206,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 08b170f392ed14c4bb34bed4404c1430, type: 2}
+  - {fileID: 2100000, guid: 18f963e6377c1a24a82607fec9759163, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -240,7 +240,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 08b170f392ed14c4bb34bed4404c1430, type: 2}
+  - {fileID: 2100000, guid: 18f963e6377c1a24a82607fec9759163, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -357,22 +357,22 @@ MonoBehaviour:
   m_SceneId:
     m_Value: 0
   m_AssetId:
-    i0: 104
-    i1: 163
-    i2: 84
-    i3: 68
-    i4: 146
-    i5: 37
-    i6: 195
-    i7: 212
-    i8: 169
-    i9: 178
-    i10: 51
-    i11: 133
-    i12: 157
-    i13: 161
-    i14: 85
-    i15: 171
+    i0: 215
+    i1: 119
+    i2: 231
+    i3: 142
+    i4: 13
+    i5: 15
+    i6: 99
+    i7: 20
+    i8: 104
+    i9: 215
+    i10: 161
+    i11: 230
+    i12: 25
+    i13: 230
+    i14: 53
+    i15: 236
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 1
 --- !u!114 &114216306817196914
@@ -396,6 +396,20 @@ MonoBehaviour:
   m_SnapThreshold: 5
   m_InterpolateRotation: 1
   m_InterpolateMovement: 1
+--- !u!114 &114367940207851134
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1704320571539864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 016344539e97c7c4fa0e1a6da9dab3e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBar: {fileID: 224707093876486002}
+  destroyOnDeath: 0
+  currentHealth: 100
 --- !u!114 &114375609266213902
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -423,20 +437,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114478723341162686
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1704320571539864}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81bcc6579bdc5c14a896046164de0c52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthBar: {fileID: 224707093876486002}
-  destroyOnDeath: 0
-  currentHealth: 100
 --- !u!114 &114491910509908674
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -458,7 +458,21 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
---- !u!114 &114855792532194854
+--- !u!114 &114540576293534454
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1704320571539864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1dbabbef07297b4cb08f26b10a10a66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 1846196121811450, guid: 972bd624a0217d44597b3422956935b7,
+    type: 2}
+  bulletSpawn: {fileID: 4964140109712150}
+--- !u!114 &114856439647018552
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -466,7 +480,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1515732229788748}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90cadf82e58565947806da285eebe861, type: 3}
+  m_Script: {fileID: 11500000, guid: 4ae61545beeadcf4884e0855d0152ee4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &114914945770484202
@@ -496,20 +510,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114991222265803648
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1704320571539864}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb5418ac13ec16c429eba07e4fd1795a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 1846196121811450, guid: 47779a5632944b147a0291fdd3fb38bc,
-    type: 2}
-  bulletSpawn: {fileID: 4964140109712150}
 --- !u!136 &136020815623362666
 CapsuleCollider:
   m_ObjectHideFlags: 1
