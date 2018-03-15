@@ -18,12 +18,14 @@ public class PlayerController : NetworkBehaviour
 
 	}
 
-
-    void Fire()
+    [Command]
+    void CmdFire()
     {
         var bullet = (GameObject) Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
 
         bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
+
+        NetworkServer.Spawn(bullet);
 
         Destroy(bullet, 2.0f);
     }
@@ -42,7 +44,7 @@ public class PlayerController : NetworkBehaviour
 
 	    if (Input.GetKeyDown(KeyCode.Space))
 	    {
-	        Fire();
+	        CmdFire();
 	    }
 	}
 }

@@ -23,6 +23,8 @@ GameObject:
   - component: {fileID: 135949272582445854}
   - component: {fileID: 23335392687900266}
   - component: {fileID: 54131408373747210}
+  - component: {fileID: 114351169502245480}
+  - component: {fileID: 114630964242346984}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Untagged
@@ -99,6 +101,59 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &114351169502245480
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1846196121811450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 231
+    i1: 60
+    i2: 103
+    i3: 154
+    i4: 59
+    i5: 169
+    i6: 229
+    i7: 52
+    i8: 155
+    i9: 73
+    i10: 95
+    i11: 183
+    i12: 39
+    i13: 129
+    i14: 244
+    i15: 177
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
+--- !u!114 &114630964242346984
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1846196121811450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TransformSyncMode: 3
+  m_SendInterval: 0
+  m_SyncRotationAxis: 7
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_VelocityThreshold: 0.0001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
 --- !u!135 &135949272582445854
 SphereCollider:
   m_ObjectHideFlags: 1
