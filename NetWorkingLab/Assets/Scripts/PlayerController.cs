@@ -2,16 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine.Networking;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 
 public class PlayerController : NetworkBehaviour
 {
 
+    public GameObject bulletPrefab;
+    public Transform bulletSpawn;
+
 	// Use this for initialization
-	void Start () 
+	public override void OnStartLocalPlayer ()
 	{
-		
+	    GetComponent<MeshRenderer>().material.color = Color.blue;
+
+
 	}
-	
+
+
+    void Fire()
+    {
+        var bullet = (GameObject) Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
+
+        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
+
+        Destroy(bullet, 2.0f);
+    }
 	// Update is called once per frame
 	void Update ()
 	{
@@ -24,5 +39,10 @@ public class PlayerController : NetworkBehaviour
 
         transform.Rotate(0f, x, 0f);
         transform.Translate(0f, 0f, z);
+
+	    if (Input.GetKeyDown(KeyCode.Space))
+	    {
+	        Fire();
+	    }
 	}
 }
