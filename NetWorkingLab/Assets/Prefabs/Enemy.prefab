@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 23720035198225982}
   - component: {fileID: 114204317079814432}
   - component: {fileID: 114380505997121178}
-  - component: {fileID: 114122868344670576}
+  - component: {fileID: 114953311967684086}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 223364493183002864}
   - component: {fileID: 114343088955144226}
   - component: {fileID: 114211465034579916}
-  - component: {fileID: 114398159758754934}
+  - component: {fileID: 114475743677704186}
   m_Layer: 5
   m_Name: Healthbar Canvas
   m_TagString: Untagged
@@ -211,7 +211,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 5de48d6fd34b94f4f844c26e7cc8cec2, type: 2}
+  - {fileID: 2100000, guid: 08b170f392ed14c4bb34bed4404c1430, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -310,20 +310,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114122868344670576
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1328135831558144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57c4fde55ee3f524ea3eb14daa11b3eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthBar: {fileID: 224746297838465462}
-  destroyOnDeath: 1
-  currentHealth: 100
 --- !u!114 &114204317079814432
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -338,22 +324,22 @@ MonoBehaviour:
   m_SceneId:
     m_Value: 0
   m_AssetId:
-    i0: 228
-    i1: 177
-    i2: 112
-    i3: 193
-    i4: 171
-    i5: 192
-    i6: 83
-    i7: 196
-    i8: 27
-    i9: 97
-    i10: 114
-    i11: 104
-    i12: 203
-    i13: 116
-    i14: 42
-    i15: 232
+    i0: 78
+    i1: 247
+    i2: 87
+    i3: 174
+    i4: 46
+    i5: 250
+    i6: 58
+    i7: 116
+    i8: 91
+    i9: 51
+    i10: 225
+    i11: 205
+    i12: 251
+    i13: 75
+    i14: 110
+    i15: 105
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 1
 --- !u!114 &114211465034579916
@@ -441,7 +427,7 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114398159758754934
+--- !u!114 &114475743677704186
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -449,9 +435,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 1694629292072068}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce3df560361130c45a52eced3fbe755e, type: 3}
+  m_Script: {fileID: 11500000, guid: 90cadf82e58565947806da285eebe861, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114953311967684086
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1328135831558144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81bcc6579bdc5c14a896046164de0c52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBar: {fileID: 224746297838465462}
+  destroyOnDeath: 1
+  currentHealth: 100
 --- !u!114 &114985159914148246
 MonoBehaviour:
   m_ObjectHideFlags: 1

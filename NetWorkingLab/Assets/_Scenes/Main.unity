@@ -292,15 +292,15 @@ MonoBehaviour:
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
   m_LogLevel: 2
-  m_PlayerPrefab: {fileID: 1704320571539864, guid: 6d390cf718250a340b1eab16f45b914d,
+  m_PlayerPrefab: {fileID: 1704320571539864, guid: 68a354449225c3d4a9b233859da155ab,
     type: 2}
   m_AutoCreatePlayer: 1
-  m_PlayerSpawnMethod: 0
+  m_PlayerSpawnMethod: 1
   m_OfflineScene: 
   m_OnlineScene: 
   m_SpawnPrefabs:
-  - {fileID: 1846196121811450, guid: e73c679a3ba9e5349b495fb72781f4b1, type: 2}
-  - {fileID: 1328135831558144, guid: e4b170c1abc053c41b617268cb742ae8, type: 2}
+  - {fileID: 1846196121811450, guid: 47779a5632944b147a0291fdd3fb38bc, type: 2}
+  - {fileID: 1328135831558144, guid: 4ef757ae2efa3a745b33e1cdfb4b6e69, type: 2}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:
@@ -394,12 +394,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 757922042}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f39ed868d9315ec4c8b72074b30a242f, type: 3}
+  m_Script: {fileID: 11500000, guid: f602f3eca7ea54246907374168d4bc5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 1328135831558144, guid: e4b170c1abc053c41b617268cb742ae8,
+  enemyPrefab: {fileID: 1328135831558144, guid: 4ef757ae2efa3a745b33e1cdfb4b6e69,
     type: 2}
-  numberOfEnemies: 4
+  numberOfEnemies: 8
 --- !u!114 &757922044
 MonoBehaviour:
   m_ObjectHideFlags: 0
