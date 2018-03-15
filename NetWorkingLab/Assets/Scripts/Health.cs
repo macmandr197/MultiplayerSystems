@@ -8,11 +8,21 @@ public class Health : NetworkBehaviour
 {
     public RectTransform healthBar;
 
+    private NetworkStartPosition[] spawnPoints;
+
     public bool destroyOnDeath;
 
     public const int MaxHealth = 100;
     [SyncVar(hook = "OnChangedHealth")]
     public int currentHealth = MaxHealth;
+
+    void Start()
+    {
+        if (isLocalPlayer)
+        {
+            spawnPoints = FindObjectsOfType<NetworkStartPosition>();
+        }
+    }
 
     public void TakeDamage(int amount)
     {
@@ -46,7 +56,14 @@ public class Health : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
-            transform.position = Vector3.zero;
+            Vector3 spawnPoint = Vector3.zero;
+
+            if (spawnPoints != null && spawnPoints.Length > 0)
+            {
+                spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)].transform.position;
+            }
+
+            transform.position = spawnPoint;
         }
     }
 }
