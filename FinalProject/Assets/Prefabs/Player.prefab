@@ -66,6 +66,7 @@ GameObject:
   - component: {fileID: 65039921155854540}
   - component: {fileID: 23858538634547976}
   - component: {fileID: 20027967120441984}
+  - component: {fileID: 81331452181341790}
   m_Layer: 0
   m_Name: Visor
   m_TagString: MainCamera
@@ -331,6 +332,13 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!81 &81331452181341790
+AudioListener:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1890923634259246}
+  m_Enabled: 0
 --- !u!82 &82527821116747870
 AudioSource:
   m_ObjectHideFlags: 1
@@ -469,7 +477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FPSCharacterCam: {fileID: 20027967120441984}
-  audioListener: {fileID: 0}
+  audioListener: {fileID: 81331452181341790}
 --- !u!114 &114708349731563480
 MonoBehaviour:
   m_ObjectHideFlags: 1

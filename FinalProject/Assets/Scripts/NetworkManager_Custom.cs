@@ -31,6 +31,15 @@ public class NetworkManager_Custom : NetworkManager
         singleton.networkPort = 7777;
     }
 
+    public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+    {
+        GameSettings.TeamNumber = ++GameSettings.TeamNumber % GameSettings.NumberOfTeams;
+        GameObject player = Instantiate(playerPrefab, GetStartPosition());
+        player.GetComponent<Player_NetworkSetup>().team = GameSettings.TeamNumber;
+        player.transform.parent = null;
+        NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+    }
+
     void OnLevelWasLoaded(int level)
     {
         if (level == 0)
@@ -55,6 +64,7 @@ public class NetworkManager_Custom : NetworkManager
     void SetupOtherSceneButtons()
     {
         GameObject.Find("ButtonDisconnect").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("ButtonDisconnect").GetComponent<Button>().onClick.AddListener(singleton.StopHost);
+        GameObject.Find("ButtonDisconnect").GetComponent<Button>().onClick.AddListener(singleton.StopClient);
+    
     }
 }
