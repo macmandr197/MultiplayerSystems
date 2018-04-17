@@ -36,8 +36,13 @@ public class Player_SyncPosition : NetworkBehaviour
 
     void Update()
     {
+        if (!isLocalPlayer)
+        {
+            return;
+        }
         LerpPosition();
         ShowLatency();
+        
     }
 
     void FixedUpdate()

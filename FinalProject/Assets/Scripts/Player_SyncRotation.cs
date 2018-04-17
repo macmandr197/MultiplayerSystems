@@ -28,6 +28,10 @@ public class Player_SyncRotation : NetworkBehaviour {
 
 	void Update ()
 	{
+	    if (!isLocalPlayer)
+	    {
+	        return;
+	    }
 		LerpRotations();
 	}
 	
